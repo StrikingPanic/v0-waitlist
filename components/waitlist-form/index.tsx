@@ -5,13 +5,13 @@ import type React from "react"
 import { useRef, useState, useEffect } from "react"
 
 type InputForm = {
-  formAction?: (data: FormData) => Promise<{ success: true } | { success: false; error: string }>
+  formspreeEndpoint: string
   buttonCopy: {
     success: string
     idle: string
     loading: string
   }
-} & React.HTMLAttributes<HTMLInputElement>
+}
 
 type State = "idle" | "loading" | "success" | "error"
 
@@ -22,7 +22,12 @@ const STATES: Record<State, State> = {
   error: "error",
 }
 
-export function InputForm({ formAction, buttonCopy, ...props }: InputForm) {
+const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+export function InputForm({ formspreeEndpoint, buttonCopy }: InputForm) {
   const [state, setState] = useState<State>(STATES.idle)
   const [error, setError] = useState<string>()
   const [value, setValue] = useState("")
@@ -48,33 +53,60 @@ export function InputForm({ formAction, buttonCopy, ...props }: InputForm) {
       setError(undefined)
       setState(STATES.idle)
     }
-    if (formAction && typeof formAction === "function") {
-      try {
-        setState(STATES.loading)
-        const data = await formAction(new FormData(formEl))
 
-        if (data.success) {
-          setState(STATES.success)
+    // Validate email before submission
+    if (!value.trim()) {
+      setError("Please enter your email address")
+      setState(STATES.error)
+      errorTimeout.current = setTimeout(() => {
+        setError(undefined)
+        setState(STATES.idle)
+      }, 3000)
+      return
+    }
 
-          formEl.reset()
-          setValue("")
-        } else {
-          setState(STATES.error)
-          setError(data.error)
-          errorTimeout.current = setTimeout(() => {
-            setError(undefined)
-            setState(STATES.idle)
-          }, 3000)
-        }
-      } catch (error) {
+    if (!isValidEmail(value)) {
+      setError("Please enter a valid email address")
+      setState(STATES.error)
+      errorTimeout.current = setTimeout(() => {
+        setError(undefined)
+        setState(STATES.idle)
+      }, 3000)
+      return
+    }
+
+    try {
+      setState(STATES.loading)
+      const response = await fetch(formspreeEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ email: value }),
+      })
+
+      if (response.ok) {
+        setState(STATES.success)
+        formEl.reset()
+        setValue("")
+      } else {
+        const data = await response.json()
         setState(STATES.error)
-        setError("There was an error while submitting the form")
-        console.error(error)
+        setError(data.error || "There was an error joining the waitlist")
         errorTimeout.current = setTimeout(() => {
           setError(undefined)
           setState(STATES.idle)
         }, 3000)
       }
+    } catch (error) {
+      setState(STATES.error)
+      setError("There was an error while submitting the form")
+      console.error(error)
+      errorTimeout.current = setTimeout(() => {
+        setError(undefined)
+        setState(STATES.idle)
+      }, 3000)
     }
   }
   const isSubmitted = state === "success"
@@ -84,7 +116,9 @@ export function InputForm({ formAction, buttonCopy, ...props }: InputForm) {
     <form className="flex flex-col gap-2 w-full relative" onSubmit={handleSubmit}>
       <div className="flex items-center justify-between gap-3 relative">
         <input
-          {...props}
+          type="email"
+          name="email"
+          placeholder="Enter your email"
           value={value}
           className={clsx(
             "flex-1 text-sm pl-4 pr-28 py-2 h-11 bg-slate-11/30 cursor-text rounded-full text-slate-1 placeholder:text-slate-9 border border-slate-10/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all",
