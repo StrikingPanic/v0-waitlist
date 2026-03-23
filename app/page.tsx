@@ -1,10 +1,12 @@
 import { basehub } from "basehub"
-import { RichText } from "basehub/react-rich-text"
-import { sendEvent, parseFormData } from "basehub/events"
 import { InputForm } from "@/components/waitlist-form"
 import { WaitlistWrapper } from "@/components/box"
 import type { Metadata } from "next"
 import "../basehub.config"
+
+/** Override with NEXT_PUBLIC_FORMSPREE_URL if you create a new Formspree form. */
+const FORMSPREE_ENDPOINT =
+  process.env.NEXT_PUBLIC_FORMSPREE_URL ?? "https://formspree.io/f/mkoqlqwk"
 
 export const dynamic = "force-static"
 export const revalidate = 30
@@ -65,9 +67,14 @@ export default async function Home() {
   })
 
   const emailInput = waitlist.input.schema[0]
-  if (!emailInput) {
-    console.warn("No email input found")
-  }
+  const emailFieldProps =
+    emailInput ??
+    ({
+      name: "email",
+      type: "email",
+      placeholder: "you@example.com",
+      required: true,
+    } as const)
 
   return (
     <WaitlistWrapper>
@@ -82,37 +89,15 @@ export default async function Home() {
       </div>
       {/* Form */}
       <div className="px-1 flex flex-col w-full self-stretch">
-        {emailInput && (
-          <InputForm
-            buttonCopy={{
-              idle: waitlist.button.idleCopy,
-              success: waitlist.button.successCopy,
-              loading: waitlist.button.submittingCopy,
-            }}
-            formAction={async (data) => {
-              "use server"
-              try {
-                const parsedData = parseFormData(waitlist.input.ingestKey, waitlist.input.schema, data)
-                if (!parsedData.success) {
-                  console.error(parsedData.errors)
-                  return {
-                    success: false,
-                    error: parsedData.errors[emailInput.name] || Object.values(parsedData.errors)[0] || "Unknown error",
-                  }
-                }
-                await sendEvent(waitlist.input.ingestKey, parsedData.data)
-                return { success: true }
-              } catch (error) {
-                console.error(error)
-                return {
-                  success: false,
-                  error: "There was an error while submitting the form",
-                }
-              }
-            }}
-            {...emailInput}
-          />
-        )}
+        <InputForm
+          formspreeEndpoint={FORMSPREE_ENDPOINT}
+          buttonCopy={{
+            idle: waitlist.button.idleCopy,
+            success: waitlist.button.successCopy,
+            loading: waitlist.button.submittingCopy,
+          }}
+          {...emailFieldProps}
+        />
       </div>
     </WaitlistWrapper>
   )
