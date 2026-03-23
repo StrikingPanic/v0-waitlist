@@ -11,19 +11,20 @@ export async function WaitlistWrapper({ children }: PropsWithChildren) {
       )}
     >
       <div className="flex flex-col gap-6 flex-1 w-full p-8 pb-4">
-        {/* Logo in top-left */}
-        <div className="self-start">
-          <Image
-            src="/vendorledger-logo.png"
-            alt="VendorLedger Logo"
-            width={56}
-            height={56}
-            className="rounded-lg"
-            priority
-          />
+        {/* Logo in top-left, title centered on same row */}
+        <div className="relative flex items-center">
+          <div className="absolute left-0">
+            <Image
+              src="/vendorledger-logo.png"
+              alt="VendorLedger Logo"
+              width={56}
+              height={56}
+              className="rounded-lg"
+              priority
+            />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-1 text-center w-full">VendorLedger</h2>
         </div>
-        {/* Centered title */}
-        <h2 className="text-2xl font-bold text-slate-1 text-center">VendorLedger</h2>
         <div className="flex flex-col gap-10 text-center">{children}</div>
       </div>
       <footer className="flex justify-center items-center w-full self-stretch px-8 py-3 text-sm bg-slate-11/10 border-t border-slate-11/20 overflow-hidden">
