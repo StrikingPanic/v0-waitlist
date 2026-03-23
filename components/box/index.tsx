@@ -12,7 +12,7 @@ export async function WaitlistWrapper({ children }: PropsWithChildren) {
     >
       <div className="flex flex-col gap-6 flex-1 w-full p-8 pb-4">
         {/* Logo and title inline */}
-        <div className="flex items-center gap-3 self-start">
+        <div className="flex items-center gap-3 justify-center">
           <Image
             src="/vendorledger-logo.png"
             alt="VendorLedger Logo"
