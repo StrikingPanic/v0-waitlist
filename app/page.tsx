@@ -74,13 +74,11 @@ export default async function Home() {
       {/* Heading */}
       <div className="space-y-3">
         <h1 className="text-2xl sm:text-3xl font-semibold text-slate-12 whitespace-pre-wrap text-balance tracking-tight">
-          {waitlist.title}
+          Striking panic into spreadsheets and notebooks!
         </h1>
-        {waitlist.subtitle && (
-          <div className="text-slate-10 [&>p]:tracking-tight text-pretty leading-relaxed">
-            <RichText content={waitlist.subtitle.json.content} />
-          </div>
-        )}
+        <div className="text-slate-10 tracking-tight text-pretty leading-relaxed">
+          <p>VendorLedger is a fast inventory manager and ledger designed for TCG vendors. Track your sealed products and slabs, keep a personal calendar for upcoming events, and switch into ShowDay Mode to instantly log sales, buys, and complex trades in real-time.</p>
+        </div>
       </div>
       {/* Form */}
       <div className="px-1 flex flex-col w-full self-stretch">
