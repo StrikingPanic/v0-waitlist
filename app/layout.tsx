@@ -114,10 +114,10 @@ export default async function RootLayout({
         >
           <MeshGradientComponent
             colors={[
-              settings.background.color1.hex,
-              settings.background.color2.hex,
-              settings.background.color3.hex,
-              settings.background.color4.hex,
+              "#00a67d", // Primary emerald green
+              "#34d399", // Light emerald / mint
+              "#ffffff", // White
+              "#a7f3d0", // Very light emerald / seafoam
             ]}
             speed={settings.background.speed}
             style={{
