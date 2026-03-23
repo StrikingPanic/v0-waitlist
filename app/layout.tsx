@@ -144,5 +144,7 @@ export default async function RootLayout({
 }
 
 export const metadata = {
-      generator: 'v0.app'
-    };
+  title: "ShowDayLedger - Fast POS + Inventory for Trading Card Vendors",
+  description: "A fast, honest, and reliable point-of-sale and inventory system built for trading card vendors. Join the waitlist for early access.",
+  generator: 'v0.app'
+};

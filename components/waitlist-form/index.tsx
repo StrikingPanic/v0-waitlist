@@ -87,7 +87,7 @@ export function InputForm({ formAction, buttonCopy, ...props }: InputForm) {
           {...props}
           value={value}
           className={clsx(
-            "flex-1 text-sm pl-4 pr-28 py-2 h-11 bg-gray-11/5 cursor-text rounded-full text-gray-12 placeholder:text-gray-9 border border-gray-11/10",
+            "flex-1 text-sm pl-4 pr-28 py-2 h-11 bg-slate-3/50 cursor-text rounded-full text-slate-12 placeholder:text-slate-9 border border-slate-5 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all",
           )}
           disabled={inputDisabled}
           onChange={(e) => setValue(e.target.value)}
@@ -100,12 +100,9 @@ export function InputForm({ formAction, buttonCopy, ...props }: InputForm) {
           type="submit"
           disabled={inputDisabled}
           className={clsx(
-            "absolute h-8 px-3.5 bg-gray-12 text-gray-1 text-sm top-1/2 transform -translate-y-1/2 right-1.5 rounded-full font-medium flex gap-1 items-center",
-            "disabled:cursor-not-allowed",
-            {
-              "bg-gray-12 text-gray-2": state === "loading",
-            },
-            inputDisabled && "cursor-not-allowed bg",
+            "absolute h-8 px-3.5 bg-primary text-primary-foreground text-sm top-1/2 transform -translate-y-1/2 right-1.5 rounded-full font-medium flex gap-1 items-center transition-all",
+            "hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70",
+            inputDisabled && "cursor-not-allowed",
           )}
         >
           {state === "loading" ? (
@@ -128,6 +125,6 @@ export function InputForm({ formAction, buttonCopy, ...props }: InputForm) {
 
 const Loading = () => (
   <div className="flex items-center gap-2">
-    <div className="w-4 h-4 rounded-full border border-[currentColor] !border-t-[transparent] animate-spin" />
+    <div className="w-4 h-4 rounded-full border-2 border-primary-foreground/30 !border-t-primary-foreground animate-spin" />
   </div>
 )

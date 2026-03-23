@@ -29,7 +29,7 @@ export const NavbarLink = ({
     <Link
       href={href}
       className={`relative text-sm font-medium py-1 px-3 transition-colors duration-200 text-slate-12 w-[90px] flex items-center justify-center
-        ${active ? 'opacity-100' : 'opacity-30 hover:opacity-60'}`}
+        ${active ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}
     >
       {children}
     </Link>
@@ -48,7 +48,7 @@ export const NavbarLinkBackground = ({ links }: { links: string[] }) => {
   return (
     <div
       className={clsx(
-        'absolute transition-all duration-200 ease-in-out h-7 rounded-full bg-slate-3'
+        'absolute transition-all duration-200 ease-in-out h-7 rounded-full bg-slate-3/80'
       )}
       style={{
         width: `90px`,

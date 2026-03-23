@@ -40,6 +40,10 @@ const config: Config = {
       },
       white: "#ffffff",
       black: "#000000",
+      primary: {
+        DEFAULT: "hsl(var(--primary))",
+        foreground: "hsl(var(--primary-foreground))",
+      },
     },
     fontSize: {
       "2xs": [

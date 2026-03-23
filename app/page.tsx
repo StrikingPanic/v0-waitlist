@@ -72,12 +72,12 @@ export default async function Home() {
   return (
     <WaitlistWrapper>
       {/* Heading */}
-      <div className="space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-medium text-slate-12 whitespace-pre-wrap text-pretty">
+      <div className="space-y-3">
+        <h1 className="text-2xl sm:text-3xl font-semibold text-slate-12 whitespace-pre-wrap text-balance tracking-tight">
           {waitlist.title}
         </h1>
         {waitlist.subtitle && (
-          <div className="text-slate-10 [&>p]:tracking-tight text-pretty">
+          <div className="text-slate-10 [&>p]:tracking-tight text-pretty leading-relaxed">
             <RichText content={waitlist.subtitle.json.content} />
           </div>
         )}
