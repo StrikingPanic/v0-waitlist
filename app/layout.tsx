@@ -2,7 +2,7 @@ import "../basehub.config";
 import type { Viewport } from "next";
 import { Geist } from "next/font/google";
 import { Providers } from "@/context";
-import { Header } from "@/components/header";
+
 import { Toolbar } from "basehub/next-toolbar";
 import { basehub } from "basehub";
 import { MeshGradientComponent } from "@/components/mesh-gradient";
@@ -131,7 +131,6 @@ export default async function RootLayout({
           />
           <div className="max-w-screen-sm mx-auto w-full relative z-[1] flex flex-col min-h-screen">
             <div className="px-5 gap-8 flex flex-col flex-1 py-[12vh]">
-              <Header />
               <main className="flex justify-center">{children}</main>
             </div>
           </div>

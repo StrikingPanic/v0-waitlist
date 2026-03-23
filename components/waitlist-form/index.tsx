@@ -87,7 +87,7 @@ export function InputForm({ formAction, buttonCopy, ...props }: InputForm) {
           {...props}
           value={value}
           className={clsx(
-            "flex-1 text-sm pl-4 pr-28 py-2 h-11 bg-slate-3/50 cursor-text rounded-full text-slate-12 placeholder:text-slate-9 border border-slate-5 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all",
+            "flex-1 text-sm pl-4 pr-28 py-2 h-11 bg-slate-11/30 cursor-text rounded-full text-slate-1 placeholder:text-slate-9 border border-slate-10/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all",
           )}
           disabled={inputDisabled}
           onChange={(e) => setValue(e.target.value)}
