@@ -13,7 +13,7 @@ type InputForm = {
     idle: string
     loading: string
   }
-} & React.HTMLAttributes<HTMLInputElement>
+}
 
 type State = "idle" | "loading" | "success" | "error"
 
@@ -97,8 +97,26 @@ export function InputForm({ formAction, formspreeEndpoint, buttonCopy, ...props 
         setState(STATES.loading)
         const data = await formAction(new FormData(formEl))
 
-        if (data.success) {
-          setState(STATES.success)
+    // Validate email before submission
+    if (!value.trim()) {
+      setError("Please enter your email address")
+      setState(STATES.error)
+      errorTimeout.current = setTimeout(() => {
+        setError(undefined)
+        setState(STATES.idle)
+      }, 3000)
+      return
+    }
+
+    if (!isValidEmail(value)) {
+      setError("Please enter a valid email address")
+      setState(STATES.error)
+      errorTimeout.current = setTimeout(() => {
+        setError(undefined)
+        setState(STATES.idle)
+      }, 3000)
+      return
+    }
 
           formEl.reset()
           setValue("")
@@ -113,6 +131,14 @@ export function InputForm({ formAction, formspreeEndpoint, buttonCopy, ...props 
         console.error(error)
         scheduleErrorReset()
       }
+    } catch (error) {
+      setState(STATES.error)
+      setError("There was an error while submitting the form")
+      console.error(error)
+      errorTimeout.current = setTimeout(() => {
+        setError(undefined)
+        setState(STATES.idle)
+      }, 3000)
     }
   }
   const isSubmitted = state === "success"
@@ -122,7 +148,9 @@ export function InputForm({ formAction, formspreeEndpoint, buttonCopy, ...props 
     <form className="flex flex-col gap-2 w-full relative" onSubmit={handleSubmit}>
       <div className="flex items-center justify-between gap-3 relative">
         <input
-          {...props}
+          type="email"
+          name="email"
+          placeholder="Enter your email"
           value={value}
           className={clsx(
             "flex-1 text-sm pl-4 pr-28 py-2 h-11 bg-slate-11/30 cursor-text rounded-full text-slate-1 placeholder:text-slate-9 border border-slate-10/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all",

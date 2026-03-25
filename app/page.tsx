@@ -2,7 +2,6 @@ import { basehub } from "basehub"
 import { InputForm } from "@/components/waitlist-form"
 import { WaitlistWrapper } from "@/components/box"
 import type { Metadata } from "next"
-import "../basehub.config"
 
 /** Override with NEXT_PUBLIC_FORMSPREE_URL if you create a new Formspree form. */
 const FORMSPREE_ENDPOINT =
