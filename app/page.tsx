@@ -11,38 +11,13 @@ const FORMSPREE_ENDPOINT =
 export const dynamic = "force-static"
 export const revalidate = 30
 
-export const generateMetadata = async (): Promise<Metadata> => {
-  const data = await basehub().query({
-    settings: {
-      metadata: {
-        titleTemplate: true,
-        defaultTitle: true,
-        defaultDescription: true,
-        favicon: {
-          url: true,
-        },
-        ogImage: {
-          url: true,
-        },
-      },
-    },
-  })
-  return {
-    title: {
-      template: data.settings.metadata.titleTemplate,
-      default: data.settings.metadata.defaultTitle,
-    },
-    description: data.settings.metadata.defaultDescription,
-    openGraph: {
-      type: "website",
-      images: [data.settings.metadata.ogImage.url],
-    },
-    twitter: {
-      card: "summary_large_image",
-      images: [data.settings.metadata.ogImage.url],
-    },
-    icons: [data.settings.metadata.favicon.url],
-  }
+export const metadata: Metadata = {
+  title: "VendorLedger",
+  description:
+    "A fast, honest, and reliable point-of-sale and inventory system built for trading card vendors. Join the waitlist for early access.",
+  icons: {
+    icon: "/vendorledger-logo.png",
+  },
 }
 
 export default async function Home() {
