@@ -1,13 +1,80 @@
+import { basehub } from "basehub"
 import { InputForm } from "@/components/waitlist-form"
 import { WaitlistWrapper } from "@/components/box"
 import type { Metadata } from "next"
 
-export const metadata: Metadata = {
-  title: "VendorLedger - Fast POS + Inventory for TCG Vendors",
-  description: "A fast, honest, and reliable inventory manager and ledger designed for trading card vendors. Join the waitlist for early access.",
+/** Override with NEXT_PUBLIC_FORMSPREE_URL if you create a new Formspree form. */
+const FORMSPREE_ENDPOINT =
+  process.env.NEXT_PUBLIC_FORMSPREE_URL ?? "https://formspree.io/f/mkoqlqwk"
+
+export const dynamic = "force-static"
+export const revalidate = 30
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  const data = await basehub().query({
+    settings: {
+      metadata: {
+        titleTemplate: true,
+        defaultTitle: true,
+        defaultDescription: true,
+        favicon: {
+          url: true,
+        },
+        ogImage: {
+          url: true,
+        },
+      },
+    },
+  })
+  return {
+    title: {
+      template: data.settings.metadata.titleTemplate,
+      default: data.settings.metadata.defaultTitle,
+    },
+    description: data.settings.metadata.defaultDescription,
+    openGraph: {
+      type: "website",
+      images: [data.settings.metadata.ogImage.url],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: [data.settings.metadata.ogImage.url],
+    },
+    icons: [data.settings.metadata.favicon.url],
+  }
 }
 
-export default function Home() {
+export default async function Home() {
+  const { waitlist } = await basehub().query({
+    waitlist: {
+      title: true,
+      subtitle: {
+        json: {
+          content: true,
+        },
+      },
+      input: {
+        ingestKey: true,
+        schema: true,
+      },
+      button: {
+        idleCopy: true,
+        successCopy: true,
+        submittingCopy: true,
+      },
+    },
+  })
+
+  const emailInput = waitlist.input.schema[0]
+  const emailFieldProps =
+    emailInput ??
+    ({
+      name: "email",
+      type: "email",
+      placeholder: "you@example.com",
+      required: true,
+    } as const)
+
   return (
     <WaitlistWrapper>
       {/* Heading */}
@@ -22,12 +89,13 @@ export default function Home() {
       {/* Form */}
       <div className="px-1 flex flex-col w-full self-stretch">
         <InputForm
-          formspreeEndpoint="https://formspree.io/f/mkoqlqwk"
+          formspreeEndpoint={FORMSPREE_ENDPOINT}
           buttonCopy={{
-            idle: "Join Waitlist",
-            success: "You're in!",
-            loading: "Joining...",
+            idle: waitlist.button.idleCopy,
+            success: waitlist.button.successCopy,
+            loading: waitlist.button.submittingCopy,
           }}
+          {...emailFieldProps}
         />
       </div>
     </WaitlistWrapper>

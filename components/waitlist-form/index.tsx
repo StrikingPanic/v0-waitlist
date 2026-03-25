@@ -5,7 +5,9 @@ import type React from "react"
 import { useRef, useState, useEffect } from "react"
 
 type InputForm = {
-  formspreeEndpoint: string
+  /** POSTs FormData with Accept: application/json (Formspree-compatible). Takes precedence over formAction. */
+  formspreeEndpoint?: string
+  formAction?: (data: FormData) => Promise<{ success: true } | { success: false; error: string }>
   buttonCopy: {
     success: string
     idle: string
@@ -22,12 +24,7 @@ const STATES: Record<State, State> = {
   error: "error",
 }
 
-const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
-}
-
-export function InputForm({ formspreeEndpoint, buttonCopy }: InputForm) {
+export function InputForm({ formAction, formspreeEndpoint, buttonCopy, ...props }: InputForm) {
   const [state, setState] = useState<State>(STATES.idle)
   const [error, setError] = useState<string>()
   const [value, setValue] = useState("")
@@ -53,6 +50,52 @@ export function InputForm({ formspreeEndpoint, buttonCopy }: InputForm) {
       setError(undefined)
       setState(STATES.idle)
     }
+    const scheduleErrorReset = () => {
+      errorTimeout.current = setTimeout(() => {
+        setError(undefined)
+        setState(STATES.idle)
+      }, 3000)
+    }
+
+    if (formspreeEndpoint) {
+      try {
+        setState(STATES.loading)
+        const res = await fetch(formspreeEndpoint, {
+          method: "POST",
+          body: new FormData(formEl),
+          headers: { Accept: "application/json" },
+        })
+        const payload = (await res.json().catch(() => ({}))) as {
+          ok?: boolean
+          error?: string
+          errors?: Record<string, string>
+        }
+        if (res.ok && payload.ok) {
+          setState(STATES.success)
+          formEl.reset()
+          setValue("")
+        } else {
+          setState(STATES.error)
+          const msg =
+            payload.error ||
+            (payload.errors && Object.values(payload.errors)[0]) ||
+            "There was an error while submitting the form"
+          setError(msg)
+          scheduleErrorReset()
+        }
+      } catch (error) {
+        setState(STATES.error)
+        setError("There was an error while submitting the form")
+        console.error(error)
+        scheduleErrorReset()
+      }
+      return
+    }
+
+    if (formAction && typeof formAction === "function") {
+      try {
+        setState(STATES.loading)
+        const data = await formAction(new FormData(formEl))
 
     // Validate email before submission
     if (!value.trim()) {
@@ -75,29 +118,18 @@ export function InputForm({ formspreeEndpoint, buttonCopy }: InputForm) {
       return
     }
 
-    try {
-      setState(STATES.loading)
-      const response = await fetch(formspreeEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ email: value }),
-      })
-
-      if (response.ok) {
-        setState(STATES.success)
-        formEl.reset()
-        setValue("")
-      } else {
-        const data = await response.json()
+          formEl.reset()
+          setValue("")
+        } else {
+          setState(STATES.error)
+          setError(data.error)
+          scheduleErrorReset()
+        }
+      } catch (error) {
         setState(STATES.error)
-        setError(data.error || "There was an error joining the waitlist")
-        errorTimeout.current = setTimeout(() => {
-          setError(undefined)
-          setState(STATES.idle)
-        }, 3000)
+        setError("There was an error while submitting the form")
+        console.error(error)
+        scheduleErrorReset()
       }
     } catch (error) {
       setState(STATES.error)
